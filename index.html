@@ -20,7 +20,7 @@
         <div class="menu-content">
             <ul>
                 <li><a href="#">Trang Chủ</a></li>
-                <li><a href="#">Giới Thiệu</a></li>
+                <li><a href="gioi-thieu-ve-chung-toi/">Giới Thiệu</a></li>
                 <li><a href="#">Sản Phẩm</a></li>
                 <li><a href="#">Liên Hệ</a></li>
                 <li><a href="#">Tuyển Dụng</a></li>
@@ -34,81 +34,51 @@
             </a>
         </div>
     </header>
-     <div class="menubolibe">
-      <div class="phone">
-        <div class="content">
-          
-          <nav role="navigation">
-            <div id="menuToggle">
-              <input type="checkbox" />
-                <span></span>
-                <span></span>
-                <span></span>
-            <ul id="menu">
-              <li><a href="#">Home</a></li>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Info</a></li>
-              <li><a href="#">Contact</a></li>
-            </ul>
-           </div>
-           <div class="menu-logo">
-              <img src="image/logo.png" alt="logo bún thịt nướng bama">
-            </div>
+     <div class="mobilemenu">
+    <nav role="navigation">
+      <div id="menuToggle">
+        <input type="checkbox" id="menuCheckbox" />
+        <span></span>
+        <span></span>
+        <span></span>
+        
+        <ul id="menu">
+          <div class="menu-close" onclick="closeMenu()">X</div>
+          <li><a href="#" onclick="closeMenu()">Trang Chủ</a></li>
+          <li><a href="gioi-thieu-ve-chung-toi/" onclick="closeMenu()">Giới Thiệu</a></li>
+          <li><a href="#" onclick="closeMenu()">Sản Phẩm</a></li>
+          <li><a href="#" onclick="closeMenu()">Liên Hệ</a></li>
+          <li><a href="#" onclick="closeMenu()">Tuyển Dụng</a></li>
+        </ul>
+        
+        <div class="menu-overlay" onclick="closeMenu()"></div>
+      </div>
 
-            <!-- GIỎ HÀNG BÊN PHẢI -->
-            <div class="menu-social">
-              <a href="#"><img src="image/login.png" alt="Đăng Nhập"></a>
-              <a href="#" id="cartIcon" onclick="openCart(event)">
-                <img src="image/cart.png" alt="giỏ hàng">
-                <span id="cartCount" class="cart-badge">0</span>
-              </a>
-            </div>
-          </nav>
-        </div>
-       </div>
-    </div>
+      <div class="menu-logo">
+        <img src="image/logo.png" alt="logo bún thịt nướng bama">
+      </div>
+
+      <div class="menu-social">
+        <a href="#"><img src="image/login.png" alt="Đăng Nhập"></a>
+        <a href="#" id="cartIcon" onclick="openCart(event)">
+          <img src="image/cart.png" alt="giỏ hàng">
+          <span id="cartCount" class="cart-badge">0</span>
+        </a>
+      </div>
+    </nav>
+  </div>
     <main>
-        <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active" data-bs-interval="5000">
-                    <video autoplay muted>
-                    <source src="image/videocoking.mp4" type="video/mp4">
-                    <source src="image/videocoking.mp4" type="video/ogg">
-                    </video>
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Bún Thịt Nướng Đặc Biệt</h5>
-                        <p>Hương vị truyền thống, chất lượng tuyệt hảo</p>
-                    </div>
-                </div>
-                <div class="carousel-item" data-bs-interval="5000">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&h=1080&fit=crop" class="d-block w-100" alt="Món ăn ngon">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Đồ Ăn Giá Rẻ</h5>
-                        <p>Nhiều lựa chọn phong phú cho bạn</p>
-                    </div>
-                </div>
-                <div class="carousel-item" data-bs-interval="5000">
-                    <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1920&h=1080&fit=crop" class="d-block w-100" alt="Không gian nhà hàng">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>Hỗ Trợ Khách Hàng</h5>
-                        <p>Phục vụ tận tình, chu đáo</p>
-                    </div>
-                </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+        <section class="hero-section" id="home">
+        <video class="hero-video" autoplay muted loop>
+            <source src="image/videocoking.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Bún Thịt Nướng BaMa</h1>
+            <p>Hương vị truyền thống - Đẳng cấp hiện đại</p>
+            <a href="#menu" class="hero-btn">Khám Phá Thực Đơn</a>
         </div>
+    </section>
 
         <section class="menu-section container py-5">
             <h2 class="text-center mb-4">Thực Đơn Hôm Nay</h2>
@@ -280,7 +250,16 @@
             </div>
         </div>
     </main>
-
+    <div class="notifications">
+    <div class="toast success">
+        <i class="fa-solid fa-circle-check"></i>
+        <div class="content">
+            <div class="title">Thành công</div>
+            <span>Đã thêm vào giỏ hàng!</span>
+        </div>
+        <i class="fa-solid fa-xmark" onclick="(this.parentElement).remove()"></i>
+    </div>
+</div>
     <!-- Footer Section -->
     <footer class="footer-section">
         <div class="container">
