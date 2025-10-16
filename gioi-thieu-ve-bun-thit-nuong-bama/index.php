@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới Thiệu Về Bún Thịt Nướng Bama</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+     <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFE8DC 100%);
+            overflow-x: hidden;
+        }
+
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,197.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            animation: wave 15s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(-25px) translateY(-10px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .hero-content p {
+            font-size: 1.8rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-20px); }
+            60% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 3px solid white;
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            animation: scroll 2s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; top: 8px; }
+            100% { opacity: 0; top: 28px; }
+        }
+
+        .intro-section {
+            padding: 100px 5%;
+            background: white;
+            position: relative;
+        }
+
+        .intro-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .intro-header {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .intro-header h2 {
+            font-size: 3.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .intro-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            border-radius: 2px;
+        }
+
+        .intro-header p {
+            font-size: 1.3rem;
+            color: #666;
+            max-width: 700px;
+            margin: 30px auto 0;
+            line-height: 1.8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 100px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #fff 0%, #fff5f0 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            animation: shine 1.5s ease;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+            position: relative;
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .timeline-section {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, #f8f9fa 0%, #fff 100%);
+            position: relative;
+        }
+
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .timeline-header h2 {
+            font-size: 3.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .timeline-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            border-radius: 2px;
+        }
+
+        .timeline-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 150px;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            z-index: 1;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .timeline-wrapper {
+            display: flex;
+            overflow-x: auto;
+            padding: 40px 0 80px 0;
+            gap: 60px;
+            scroll-behavior: smooth;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .timeline-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .timeline-wrapper::-webkit-scrollbar-thumb {
+            background: #ff6b35;
+            border-radius: 10px;
+        }
+
+        .timeline-item {
+            min-width: 320px;
+            position: relative;
+            animation: slideIn 0.8s ease forwards;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.6s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.8s; }
+        .timeline-item:nth-child(5) { animation-delay: 1.0s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .timeline-dot {
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            border: 6px solid #ff6b35;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 0 0 10px rgba(255, 107, 53, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-dot {
+            transform: scale(1.5);
+            box-shadow: 0 0 0 14px rgba(255, 107, 53, 0.4);
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+        }
+
+        .timeline-content {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .timeline-item:hover .timeline-content {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+
+        .timeline-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+
+        .timeline-item:hover .timeline-image {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .timeline-info {
+            padding: 30px;
+            position: relative;
+        }
+
+        .timeline-year {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .timeline-year::before {
+            content: '📅';
+            font-size: 1.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-year {
+            color: #f7931e;
+        }
+
+        .timeline-item:hover .timeline-year::before {
+            transform: scale(1.2);
+        }
+
+        .timeline-description {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            transition: color 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-description {
+            color: #333;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .timeline-item:hover .timeline-content::before {
+            transform: scaleX(1);
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+
+            .hero-content p {
+                font-size: 1.2rem;
+            }
+
+            .intro-header h2,
+            .timeline-header h2 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-line {
+                display: none;
+            }
+
+            .timeline-wrapper {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .timeline-item {
+                min-width: 100%;
+            }
+
+            .timeline-image {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <?php include '../header.html'; ?>
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <video class="hero-video" autoplay muted loop>
+            <source src="../video/gioithieu.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Qúa Trình Hình Thành Bún Thịt Nướng Bama</h1>
+            <p></p>
+            <a href="" class="hero-btn">Khám Phá Hơn Về Chúng Tôi</a>
+        </div>
+    </section>
+    <section class="relative py-24 bg-gradient-to-b from-white to-[#fff5f0] overflow-hidden">
+  <!-- Background pattern -->
+  <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/food.png')] opacity-5"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-16">
+      <h2 class="text-5xl font-extrabold text-gray-900 mb-4 relative inline-block">
+        Về Chúng Tôi
+        <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-[#ff6b35] to-orange-400 rounded-full"></span>
+      </h2>
+      <p class="max-w-2xl mx-auto text-lg text-gray-600 mt-6">
+        Bún Thịt Nướng <span class="text-[#ff6b35] font-semibold">Bama</span> được sinh ra từ niềm đam mê với ẩm thực Việt và khát vọng mang đến trải nghiệm đậm đà hương vị truyền thống – hiện đại.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-10">
+      <!-- Card 1 -->
+      <div class="group bg-white rounded-3xl p-10 shadow-lg hover:shadow-2xl transition-all duration-500 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-2 h-full bg-[#ff6b35] rounded-r-lg opacity-0 group-hover:opacity-100 transition-all"></div>
+        <div class="flex justify-center mb-6">
+          <div class="w-20 h-20 bg-gradient-to-br from-[#ff6b35] to-orange-400 rounded-full flex items-center justify-center text-4xl shadow-md">🍜</div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Công Thức Độc Quyền</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Bí quyết ướp thịt truyền thống hòa cùng kỹ thuật nướng hiện đại, tạo nên hương vị đặc trưng khiến ai ăn một lần cũng nhớ mãi.
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="group bg-white rounded-3xl p-10 shadow-lg hover:shadow-2xl transition-all duration-500 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-2 h-full bg-[#ff6b35] rounded-r-lg opacity-0 group-hover:opacity-100 transition-all"></div>
+        <div class="flex justify-center mb-6">
+          <div class="w-20 h-20 bg-gradient-to-br from-[#ff6b35] to-orange-400 rounded-full flex items-center justify-center text-4xl shadow-md">🌿</div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Nguyên Liệu Tươi Ngon</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Mỗi món ăn được tạo nên từ những nguyên liệu tươi sạch, được tuyển chọn kỹ càng, mang đến hương vị tự nhiên và thuần Việt nhất.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="group bg-white rounded-3xl p-10 shadow-lg hover:shadow-2xl transition-all duration-500 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-2 h-full bg-[#ff6b35] rounded-r-lg opacity-0 group-hover:opacity-100 transition-all"></div>
+        <div class="flex justify-center mb-6">
+          <div class="w-20 h-20 bg-gradient-to-br from-[#ff6b35] to-orange-400 rounded-full flex items-center justify-center text-4xl shadow-md">❤️</div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Phục Vụ Tận Tâm</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Từng nhân viên là một “đại sứ ẩm thực”, luôn đặt sự hài lòng và trải nghiệm của khách hàng lên hàng đầu.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative floating noodles -->
+  <div class="absolute -top-16 -left-16 w-40 h-40 bg-[#ff6b35] opacity-10 blur-3xl rounded-full animate-pulse"></div>
+  <div class="absolute bottom-0 right-0 w-60 h-60 bg-orange-300 opacity-20 blur-3xl rounded-full animate-ping"></div>
+</section>
+    <!-- Timeline Section -->
+    <section class="timeline-section">
+        <div class="timeline-header">
+            <h2>Hành Trình Phát Triển</h2>
+        </div>
+        
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-wrapper">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop" alt="2018" class="timeline-image">
+                        <div class="timeline-info">
+                            <div class="timeline-year">2018</div>
+                            <p class="timeline-description">Khởi đầu với một quán nhỏ tại trung tâm Sài Gòn, Bama bắt đầu hành trình chinh phục thực khách bằng công thức bún thịt nướng độc đáo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=250&fit=crop" alt="2019" class="timeline-image">
+                        <div class="timeline-info">
+                            <div class="timeline-year">2019</div>
+                            <p class="timeline-description">Mở rộng thực đơn với nhiều món ăn đa dạng hơn, kết hợp giữa truyền thống và hiện đại. Nhận được giải thưởng "Món Ăn Được Yêu Thích Nhất".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=250&fit=crop" alt="2020" class="timeline-image">
+                        <div class="timeline-info">
+                            <div class="timeline-year">2020</div>
+                            <p class="timeline-description">Ra mắt hệ thống đặt món trực tuyến, giúp khách hàng dễ dàng thưởng thức món ăn yêu thích ngay tại nhà trong mùa dịch.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&h=250&fit=crop" alt="2022" class="timeline-image">
+                        <div class="timeline-info">
+                            <div class="timeline-year">2022</div>
+                            <p class="timeline-description">Khai trương chi nhánh thứ 5, mở rộng phạm vi phục vụ khắp thành phố. Đạt mốc 1 triệu khách hàng thân thiết.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=400&h=250&fit=crop" alt="2025" class="timeline-image">
+                        <div class="timeline-info">
+                            <div class="timeline-year">2025</div>
+                            <p class="timeline-description">Hợp tác với Shopee, Grab và Be, mang hương vị Bún Thịt Nướng Bama đến hàng triệu khách hàng qua nền tảng giao hàng. Vẫn duy trì 5-6 chi nhánh, tập trung vào chất lượng và trải nghiệm khách hàng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php include '../footer.html'; ?>
+    <script src="/food/cart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

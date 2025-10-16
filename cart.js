@@ -4,41 +4,94 @@
 let cart = [];
 let cartModal;
 
-// Thêm CSS animations ngay khi load
+// Thêm CSS animations
 const style = document.createElement('style');
 style.id = 'cart-animations';
 style.textContent = `
     @keyframes slideInRight {
-        from {
-            transform: translateX(450px);
-            opacity: 0;
-        }
-        40% {
-            transform: translateX(-10px);
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
+        from { transform: translateX(450px); opacity: 0; }
+        40% { transform: translateX(-10px); }
+        to { transform: translateX(0); opacity: 1; }
     }
     
     @keyframes fadeOut {
-        from {
-            opacity: 1;
-        }
-        to {
-            opacity: 0;
-        }
+        from { opacity: 1; }
+        to { opacity: 0; }
     }
     
     @keyframes progressBar {
-        to {
-            width: 0;
-        }
+        to { width: 0; }
     }
     
     .custom-notification {
-        position: relative;
+        position: fixed;
+        top: 30px;
+        right: 20px;
+        z-index: 10000;
+        padding: 15px 20px;
+        color: #fff;
+        width: 400px;
+        max-width: 90vw;
+        display: grid;
+        grid-template-columns: 60px 1fr 40px;
+        border-radius: 8px;
+        background-image: linear-gradient(to right, #0abf3055, #22242f 30%);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        animation: slideInRight 0.4s ease;
+    }
+    
+    .custom-notification .fa-circle-check, .custom-notification .fa-info-circle {
+        color: #0abf30;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+    }
+    
+    .custom-notification .content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .custom-notification .title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .custom-notification span {
+        color: #fff;
+        opacity: 0.9;
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    .custom-notification .close-btn {
+        color: #fff;
+        opacity: 0.6;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s;
+        font-size: 1.2rem;
+        z-index: 10001;
+    }
+    
+    .custom-notification .close-btn:hover {
+        opacity: 1;
+    }
+    
+    .custom-notification .progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: #0abf30;
+        width: 100%;
+        height: 3px;
+        box-shadow: 0 0 10px #0abf30;
+        animation: progressBar 5s linear forwards;
     }
 `;
 document.head.appendChild(style);
@@ -47,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Khởi tạo cartModal
     const modalElement = document.getElementById('cartModal');
     if (modalElement) {
-        cartModal = new bootstrap.Modal(modalElement);
+        cartModal = new bootstrap.Modal(modalElement, { backdrop: 'static' });
         console.log('cartModal initialized:', cartModal);
     } else {
         console.error('Modal element #cartModal not found!');
@@ -61,36 +114,44 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Cart button #cartButton not found!');
     }
 
-    // Khi load trang, lấy dữ liệu giỏ hàng đã lưu
+    // Load giỏ hàng từ localStorage
     const savedCart = localStorage.getItem('cartData');
     if (savedCart) {
         cart = JSON.parse(savedCart);
         updateCartIcon();
     }
 
-    // Nút Đặt Ngay → thêm vào giỏ
+    // Gán sự kiện cho các nút Đặt Ngay
     document.querySelectorAll('.btn-danger, .order-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             const card = this.closest('.card, .menu-card, .combo-card');
             const name = card.querySelector('.card-title, h3, h5').textContent.trim();
             const priceText = card.querySelector('.card-text, .price').textContent.trim();
-            
-            let img = card.querySelector('.cover-image') || card.querySelector('.card-img-top') || card.querySelector('img');
+            let img = card.querySelector('.cover-image, .card-img-top, img');
             img = img ? img.src : 'image/logo.png';
-            
             const price = parseInt(priceText.replace(/[^\d]/g, ''));
             addToCart(name, price, img);
         });
     });
+
+    // Xử lý nút đóng cho toast tĩnh (nếu có trong HTML)
+    document.querySelectorAll('.toast .fa-xmark').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+            const toast = this.closest('.toast');
+            toast.style.animation = 'fadeOut 0.4s ease';
+            setTimeout(() => {
+                toast.remove();
+            }, 400);
+        });
+    });
 });
 
-// Hàm hiển thị thông báo đẹp
+// Hàm hiển thị thông báo
 function showNotification(message, type = 'success') {
+    // Xóa thông báo cũ nếu có
     const oldNotification = document.querySelector('.custom-notification');
-    if (oldNotification) {
-        oldNotification.remove();
-    }
+    if (oldNotification) oldNotification.remove();
 
     const notification = document.createElement('div');
     notification.className = 'custom-notification';
@@ -114,88 +175,32 @@ function showNotification(message, type = 'success') {
         <i class="fa-solid fa-xmark close-btn"></i>
     `;
     
-    notification.style.cssText = `
-        position: fixed;
-        top: 30px;
-        right: 20px;
-        z-index: 9999;
-        padding: 15px 20px;
-        color: #fff;
-        width: 400px;
-        max-width: 90vw;
-        display: grid;
-        grid-template-columns: 60px 1fr 40px;
-        border-radius: 8px;
-        background-image: ${bgColor};
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        animation: slideInRight 0.4s ease, fadeOut 0.4s ease 4.6s;
-    `;
+    notification.style.backgroundImage = bgColor;
     
     const iconEl = notification.querySelector('i:first-child');
-    iconEl.style.cssText = `
-        color: ${iconColor};
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 2rem;
-    `;
-    
-    const contentDiv = notification.querySelector('.content');
-    contentDiv.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    `;
-    
-    const title = notification.querySelector('.title');
-    title.style.cssText = `
-        font-size: 1.1rem;
-        font-weight: bold;
-        margin-bottom: 5px;
-    `;
-    
-    const text = notification.querySelector('span');
-    text.style.cssText = `
-        color: #fff;
-        opacity: 0.9;
-        font-size: 0.95rem;
-        line-height: 1.4;
-    `;
+    iconEl.style.color = iconColor;
     
     const closeBtn = notification.querySelector('.close-btn');
-    closeBtn.style.cssText = `
-        color: #fff;
-        opacity: 0.6;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.3s;
-        font-size: 1.2rem;
-    `;
-    
-    closeBtn.addEventListener('mouseover', () => closeBtn.style.opacity = '1');
-    closeBtn.addEventListener('mouseout', () => closeBtn.style.opacity = '0.6');
-    closeBtn.addEventListener('click', () => notification.remove());
     
     const progressBar = document.createElement('div');
-    progressBar.style.cssText = `
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        background-color: ${iconColor};
-        width: 100%;
-        height: 3px;
-        box-shadow: 0 0 10px ${iconColor};
-        animation: progressBar 5s linear 1 forwards;
-    `;
+    progressBar.className = 'progress-bar';
+    progressBar.style.backgroundColor = iconColor;
+    progressBar.style.boxShadow = `0 0 10px ${iconColor}`;
     notification.appendChild(progressBar);
     
     document.body.appendChild(notification);
     
+    // Xử lý sự kiện đóng
+    closeBtn.addEventListener('click', () => {
+        notification.style.animation = 'fadeOut 0.4s ease';
+        setTimeout(() => notification.remove(), 400);
+    });
+    
+    // Tự động xóa sau 5 giây nếu không đóng thủ công
     setTimeout(() => {
         if (notification.parentElement) {
-            notification.remove();
+            notification.style.animation = 'fadeOut 0.4s ease';
+            setTimeout(() => notification.remove(), 400);
         }
     }, 5000);
 }
@@ -217,30 +222,22 @@ function updateCartIcon() {
     const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
     cartBadges.forEach(badge => {
         badge.textContent = totalQty;
-        if (totalQty > 0) {
-            badge.style.display = 'flex';
-        } else {
-            badge.style.display = 'none';
-        }
+        badge.style.display = totalQty > 0 ? 'flex' : 'none';
     });
 }
 
 function openCart(event) {
     if (event) event.preventDefault();
-    
-    // Khởi tạo cartModal nếu chưa tồn tại
     if (!cartModal) {
         const modalElement = document.getElementById('cartModal');
         if (modalElement) {
-            cartModal = new bootstrap.Modal(modalElement);
-            console.log('cartModal initialized in openCart:', cartModal);
+            cartModal = new bootstrap.Modal(modalElement, { backdrop: 'static' });
         } else {
             console.error('Cart modal element not found!');
             showNotification('Không thể mở giỏ hàng: Modal không tìm thấy!', 'info');
             return;
         }
     }
-    
     updateCartModal();
     cartModal.show();
 }
@@ -342,15 +339,15 @@ function saveCart() {
     localStorage.setItem('cartData', JSON.stringify(cart));
 }
 
-// Export functions để có thể gọi từ HTML
-window.addToCart = addToCart;
-window.openCart = openCart;
-window.checkout = checkout;
-window.changeQty = changeQty;
-window.removeItem = removeItem;
-
 function closeMenu() {
     document.getElementById('menuCheckbox').checked = false;
 }
 
 document.querySelector('.menu-overlay')?.addEventListener('click', closeMenu);
+
+// Export functions
+window.addToCart = addToCart;
+window.openCart = openCart;
+window.checkout = checkout;
+window.changeQty = changeQty;
+window.removeItem = removeItem;
