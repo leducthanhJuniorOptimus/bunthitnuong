@@ -1,3 +1,7 @@
+<?php 
+session_start();
+require_once "db.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto|Work+Sans:400,600" rel="stylesheet">
 </head>
 <body>
-        <?php include 'header.html'; ?>
+        <?php include 'header.php'; ?>
 
     <main>
         <section class="hero-section" id="home">

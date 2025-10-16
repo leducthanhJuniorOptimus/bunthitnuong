@@ -1,7 +1,6 @@
 <?php
 session_start();
-
-
+require_once "../db.php";
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -71,8 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } catch (Exception $e) {
         echo "Không thể gửi email. Lỗi: {$mail->ErrorInfo}";
     }
-} else {
-    echo "Không có dữ liệu POST được gửi đến.";
 }
 ?>
 <!DOCTYPE html>
@@ -361,7 +358,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-        <?php include '../header.html'; ?>
+        <?php include '../header.php'; ?>
 <section class="hero-section" id="home">
         <video class="hero-video" autoplay muted loop>
             <source src="../video/lienhe.mp4" type="video/mp4">

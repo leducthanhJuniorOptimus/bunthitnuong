@@ -1,11 +1,35 @@
+<?php 
+session_start();
+require_once "db.php";
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+if ($_SERVER["REQUEST_METHOD"] === 'POST' && isset($_POST['csrf_token']) && $_POST['csrf_token'] === $_SESSION['csrf_token']){
+    $username = trim($_POST["username"]);
+    $email = trim($_POST["email"]);
+    $password = password_hash(trim($_POST["password"]), PASSWORD_DEFAULT);
+    $phone = trim($_POST["sdt"]);
+    $diachi = trim($_POST["diachi"]);
+    $stmt2 = $conn->prepare("INSERT INTO users (username, email, password, phone,diachi) VALUES (?, ?, ?, ?, ?)");
+    $stmt2->bind_param("sssss", $username, $email, $password, $phone, $diachi);
+    try {
+                    $stmt2->execute();
+                    $_SESSION['message'] .= " Đăng ký thành công!";
+                    header("Location: login.php");
+                    exit();
+                } catch (mysqli_sql_exception $e) {
+                    $_SESSION['error'] = "Tên đăng nhập hoặc email đã tồn tại!";
+                }
+                $stmt2->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Material Design Login Form</title>
+    <title>Material Design Resiger Form</title>
     <style>
-        /* Material Design Login Form - Complete & Self-Contained */
 
 * {
     margin: 0;
@@ -701,12 +725,25 @@ body {
         top: 16px;
         left: 16px;
     }
+}.back-btn {
+    display: inline-flex
+;
+    align-items: center;
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-weight: 500;
+    transition: all 0.2s 
+ease;
 }
     </style>
 </head>
 <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <div class="login-container">
-        <div class="login-card">
+ <a href="/food/index.php" class="back-btn">
+            <i class="fa-solid fa-arrow-left me-2"></i> Quay lại trang chủ
+        </a>        <div class="login-card">
             <div class="login-header">
                 <div class="material-logo">
                     <div class="logo-layers">
@@ -715,11 +752,21 @@ body {
                         <div class="layer layer-3"></div>
                     </div>
                 </div>
-                <h2>Sign in</h2>
+                <h2>Sign up</h2>
                 <p>to continue to your account</p>
             </div>
             
-            <form class="login-form" id="loginForm" novalidate>
+            <form method="POST" action="#" class="login-form" id="loginForm" novalidate>
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" required autocomplete="username">
+                        <label for="username">Username</label>
+                        <div class="input-line"></div>
+                        <div class="ripple-container"></div>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
                 <div class="form-group">
                     <div class="input-wrapper">
                         <input type="email" id="email" name="email" required autocomplete="email">
@@ -743,7 +790,24 @@ body {
                     </div>
                     <span class="error-message" id="passwordError"></span>
                 </div>
-
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="sdt" name="sdt" required autocomplete="sdt">
+                        <label for="sdt">Số Điện Thoại</label>
+                        <div class="input-line"></div>
+                        <div class="ripple-container"></div>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="diachi" name="diachi" required autocomplete="diachi">
+                        <label for="diachi">Địa Chỉ</label>
+                        <div class="input-line"></div>
+                        <div class="ripple-container"></div>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
                 <div class="form-options">
                     <div class="checkbox-wrapper">
                         <input type="checkbox" id="remember" name="remember">
@@ -801,7 +865,7 @@ body {
             </div>
 
             <div class="signup-link">
-                <p>Don't have an account? <a href="#" class="create-account">Create account</a></p>
+                <p>Have an account? <a href="login" class="create-account">Login account</a></p>
             </div>
 
             <div class="success-message" id="successMessage">
@@ -818,112 +882,98 @@ body {
         </div>
     </div>
     <script>
-        // Basic Login Form Script
 class BasicLoginForm {
-    constructor() {
-        this.form = document.getElementById('loginForm');
-        this.emailInput = document.getElementById('email');
-        this.passwordInput = document.getElementById('password');
-        this.passwordToggle = document.getElementById('passwordToggle');
-        this.successMessage = document.getElementById('successMessage');
-        
-        this.init();
+  constructor() {
+    this.form = document.getElementById('loginForm');
+    this.usernameInput = document.getElementById('username');
+    this.passwordInput = document.getElementById('password');
+    this.passwordToggle = document.getElementById('passwordToggle');
+    this.successMessage = document.getElementById('successMessage');
+    
+    this.init();
+  }
+  
+  init() {
+    // FormUtils.addSharedAnimations(); // Bỏ nếu không cần
+    // FormUtils.setupFloatingLabels(this.form); // Bỏ nếu không cần
+    this.setupPasswordToggle();
+    
+    this.form.addEventListener('submit', this.handleSubmit.bind(this));
+    this.usernameInput.addEventListener('input', () => this.validateField('username'));
+    this.passwordInput.addEventListener('input', () => this.validateField('password'));
+    
+    // FormUtils.addEntranceAnimation(this.form.closest('.login-card'), 100); // Bỏ nếu không cần
+  }
+  
+  setupPasswordToggle() {
+    this.passwordToggle.addEventListener('click', () => {
+      const isPassword = this.passwordInput.type === 'password';
+      this.passwordInput.type = isPassword ? 'text' : 'password';
+      this.passwordToggle.querySelector('.toggle-icon').classList.toggle('show-password', isPassword);
+    });
+  }
+  
+  validateField(fieldName) {
+    const input = document.getElementById(fieldName);
+    const value = input.value.trim();
+    let validation;
+    
+    // FormUtils.clearError(fieldName); // Thay bằng logic dưới
+    const errorElement = document.getElementById(`${fieldName}Error`);
+    errorElement.classList.remove('show');
+    input.closest('.form-group').classList.remove('error');
+    
+    if (fieldName === 'username') {
+      validation = value.length >= 3 ? { isValid: true } : { isValid: false, message: 'Username phải có ít nhất 3 ký tự' };
+    } else if (fieldName === 'password') {
+      validation = value.length >= 6 ? { isValid: true } : { isValid: false, message: 'Mật khẩu phải có ít nhất 6 ký tự' };
     }
     
-    init() {
-        // Initialize shared utilities
-        FormUtils.addSharedAnimations();
-        FormUtils.setupFloatingLabels(this.form);
-        FormUtils.setupPasswordToggle(this.passwordInput, this.passwordToggle);
-        
-        // Add event listeners
-        this.form.addEventListener('submit', this.handleSubmit.bind(this));
-        this.emailInput.addEventListener('input', () => this.validateField('email'));
-        this.passwordInput.addEventListener('input', () => this.validateField('password'));
-        
-        // Add entrance animation
-        FormUtils.addEntranceAnimation(this.form.closest('.login-card'), 100);
+    if (!validation.isValid && value !== '') {
+      errorElement.textContent = validation.message;
+      errorElement.classList.add('show');
+      input.closest('.form-group').classList.add('error');
+      return false;
+    } else if (validation.isValid) {
+      return true;
     }
     
-    validateField(fieldName) {
-        const input = document.getElementById(fieldName);
-        const value = input.value.trim();
-        let validation;
-        
-        // Clear previous errors
-        FormUtils.clearError(fieldName);
-        
-        // Validate based on field type
-        if (fieldName === 'email') {
-            validation = FormUtils.validateEmail(value);
-        } else if (fieldName === 'password') {
-            validation = FormUtils.validatePassword(value);
-        }
-        
-        if (!validation.isValid && value !== '') {
-            FormUtils.showError(fieldName, validation.message);
-            return false;
-        } else if (validation.isValid) {
-            FormUtils.showSuccess(fieldName);
-            return true;
-        }
-        
-        return true;
+    return true;
+  }
+  
+  async handleSubmit(e) {
+    e.preventDefault();
+    
+    const username = this.usernameInput.value.trim();
+    const password = this.passwordInput.value.trim();
+    
+    const usernameValid = this.validateField('username');
+    const passwordValid = this.validateField('password');
+    
+    if (!usernameValid || !passwordValid) {
+      alert('Vui lòng sửa các lỗi bên dưới');
+      return;
     }
     
-    async handleSubmit(e) {
-        e.preventDefault();
-        
-        const email = this.emailInput.value.trim();
-        const password = this.passwordInput.value.trim();
-        
-        // Validate all fields
-        const emailValid = this.validateField('email');
-        const passwordValid = this.validateField('password');
-        
-        if (!emailValid || !passwordValid) {
-            FormUtils.showNotification('Please fix the errors below', 'error', this.form);
-            return;
-        }
-        
-        // Show loading state
-        const submitBtn = this.form.querySelector('.login-btn');
-        submitBtn.classList.add('loading');
-        
-        try {
-            // Simulate login process
-            await FormUtils.simulateLogin(email, password);
-            
-            // Show success state
-            this.showSuccess();
-            
-        } catch (error) {
-            // Show error notification
-            FormUtils.showNotification(error.message, 'error', this.form);
-        } finally {
-            // Remove loading state
-            submitBtn.classList.remove('loading');
-        }
-    }
+    const submitBtn = this.form.querySelector('.login-btn');
+    submitBtn.classList.add('loading');
     
-    showSuccess() {
-        // Hide the form
-        this.form.style.display = 'none';
-        
-        // Show success message
-        this.successMessage.classList.add('show');
-        
-        // Simulate redirect after 2 seconds
-        setTimeout(() => {
-            FormUtils.showNotification('Redirecting to dashboard...', 'success', this.successMessage);
-        }, 2000);
+    try {
+      // Giả lập đăng nhập
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      this.form.submit();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      submitBtn.classList.remove('loading');
     }
+  }
 }
 
-// Initialize the form when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new BasicLoginForm();
+  new BasicLoginForm();
 });
+</script>
     </script>
     <script src="../../shared/js/form-utils.js"></script>
     <script src="script.js"></script>

@@ -1,3 +1,7 @@
+<?php 
+session_start();
+require_once "../db.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -316,7 +320,7 @@
     </style>
 </head>
 <body>
-      <?php include '../header.html'; ?>
+      <?php include '../header.php'; ?>
 
     <!-- All Products Section -->
  <section class="hero-section" id="home">

@@ -1,3 +1,7 @@
+<?php 
+session_start();
+require_once "../db.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -491,7 +495,7 @@
     </style>
 </head>
 <body>
-    <?php include '../header.html'; ?>
+    <?php include '../header.php'; ?>
     <!-- Hero Section -->
     <section class="hero-section" id="home">
         <video class="hero-video" autoplay muted loop>
