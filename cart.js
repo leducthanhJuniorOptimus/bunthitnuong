@@ -40,12 +40,16 @@ style.textContent = `
         animation: slideInRight 0.4s ease;
     }
     
-    .custom-notification .fa-circle-check, .custom-notification .fa-info-circle {
+    .custom-notification .fa-circle-check, .custom-notification .fa-info-circle, .custom-notification .fa-exclamation-triangle {
         color: #0abf30;
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 2rem;
+    }
+    
+    .custom-notification .fa-exclamation-triangle {
+        color: #ff6b35;
     }
     
     .custom-notification .content {
@@ -156,20 +160,29 @@ function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.className = 'custom-notification';
     
-    const icon = type === 'success' ? 
-        '<i class="fa-solid fa-circle-check"></i>' : 
-        '<i class="fa-solid fa-info-circle"></i>';
+    let icon, bgColor, iconColor;
     
-    const bgColor = type === 'success' ? 
-        'linear-gradient(to right, #0abf3055, #22242f 30%)' : 
-        'linear-gradient(to right, #ff6b3555, #22242f 30%)';
+    if (type === 'success') {
+        icon = '<i class="fa-solid fa-circle-check"></i>';
+        bgColor = 'linear-gradient(to right, #0abf3055, #22242f 30%)';
+        iconColor = '#0abf30';
+    } else if (type === 'warning') {
+        icon = '<i class="fa-solid fa-exclamation-triangle"></i>';
+        bgColor = 'linear-gradient(to right, #ff6b3555, #22242f 30%)';
+        iconColor = '#ff6b35';
+    } else {
+        icon = '<i class="fa-solid fa-info-circle"></i>';
+        bgColor = 'linear-gradient(to right, #3498db55, #22242f 30%)';
+        iconColor = '#3498db';
+    }
     
-    const iconColor = type === 'success' ? '#0abf30' : '#ff6b35';
+    const title = type === 'success' ? 'Thành công' : 
+                  type === 'warning' ? 'Cảnh báo' : 'Thông báo';
     
     notification.innerHTML = `
         ${icon}
         <div class="content">
-            <div class="title">${type === 'success' ? 'Thành công' : 'Thông báo'}</div>
+            <div class="title">${title}</div>
             <span>${message}</span>
         </div>
         <i class="fa-solid fa-xmark close-btn"></i>
@@ -306,33 +319,115 @@ function checkout() {
         showNotification('Giỏ hàng của bạn đang trống!', 'info');
         return;
     }
-    
-    let orderDetails = '<div style="text-align: left; line-height: 2;">';
-    orderDetails += '<strong style="font-size: 1.1rem;">📋 Chi tiết đơn hàng:</strong><br><br>';
-    
-    let total = 0;
-    cart.forEach(item => {
-        const itemTotal = item.price * item.qty;
-        total += itemTotal;
-        orderDetails += `<div style="margin-bottom: 8px;">• <strong>${item.name}</strong> x${item.qty} = <span style="color: #ff6b35; font-weight: 600;">${itemTotal.toLocaleString('vi-VN')}đ</span></div>`;
+
+    // Kiểm tra đăng nhập
+    if (!window.isLoggedIn) {
+        showNotification('Vui lòng <strong>đăng nhập</strong> để đặt hàng!', 'warning');
+        setTimeout(() => {
+            window.location.href = window.loginUrl;
+        }, 2000);
+        return;
+    }
+
+    // Disable nút đặt hàng để tránh click nhiều lần
+    const checkoutBtn = document.querySelector('.modal-footer .btn-danger');
+    if (checkoutBtn) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = 'Đang xử lý...';
+    }
+
+    // Gửi dữ liệu giỏ hàng qua AJAX
+    fetch('/food/checkout.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cart: cart })
+    })
+    .then(response => {
+        console.log('Response status:', response.status); // Debug
+        
+        // Kiểm tra status code
+        if (response.status === 401) {
+            return response.json().then(data => {
+                throw new Error('UNAUTHORIZED');
+            });
+        }
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data); // Debug
+        
+        if (data.success) {
+            // Đóng modal trước
+            if (cartModal) {
+                cartModal.hide();
+            }
+            
+            // Tính tổng tiền
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.qty;
+            });
+            
+            // Hiển thị thông báo đơn giản hơn
+            const message = `
+                <div style="line-height: 1.8;">
+                    <strong style="font-size: 1.1rem;">✅ Đặt hàng thành công!</strong><br>
+                    <div style="margin-top: 10px;">
+                        📦 <strong>${cart.length}</strong> sản phẩm<br>
+                        💰 Tổng: <strong style="color: #ff6b35;">${total.toLocaleString('vi-VN')}đ</strong>
+                    </div>
+                    <div style="margin-top: 10px; color: #666; font-size: 0.95rem;">
+                        Chúng tôi sẽ liên hệ bạn sớm nhất! 🎉
+                    </div>
+                </div>
+            `;
+            
+            showNotification(message, 'success');
+            
+            // Xóa giỏ hàng sau khi thông báo hiển thị
+            setTimeout(() => {
+                cart = [];
+                saveCart();
+                updateCartIcon();
+            }, 1500);
+            
+        } else {
+            // Hiển thị lỗi từ server
+            showNotification(data.message || 'Có lỗi xảy ra khi đặt hàng!', 'warning');
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi:', error); // Debug
+        
+        if (error.message === 'UNAUTHORIZED') {
+            // Đóng modal giỏ hàng
+            if (cartModal) {
+                cartModal.hide();
+            }
+            
+            showNotification('Vui lòng <strong>đăng nhập</strong> để đặt hàng!', 'warning');
+            
+            setTimeout(() => {
+                window.location.href = '/food/login.php';
+            }, 2000);
+        } else {
+            showNotification('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại!', 'warning');
+        }
+    })
+    .finally(() => {
+        // Enable lại nút đặt hàng
+        if (checkoutBtn) {
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Đặt Hàng';
+        }
     });
-    
-    orderDetails += `<br><div style="padding: 15px; background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%); border-radius: 10px; border: 2px solid #ff6b35; margin-top: 10px;">`;
-    orderDetails += `<strong style="font-size: 1.3rem; color: #ff6b35;">💰 Tổng cộng: ${total.toLocaleString('vi-VN')}đ</strong>`;
-    orderDetails += `</div>`;
-    orderDetails += `<div style="margin-top: 15px; color: #666; font-size: 0.95rem;">✨ Cảm ơn quý khách đã đặt hàng!</div>`;
-    orderDetails += '</div>';
-    
-    showNotification(orderDetails, 'success');
-    
-    cartModal.hide();
-    
-    setTimeout(() => {
-        cart = [];
-        saveCart();
-        updateCartIcon();
-        updateCartModal();
-    }, 3000);
 }
 
 function saveCart() {
@@ -342,7 +437,6 @@ function saveCart() {
 function closeMenu() {
     document.getElementById('menuCheckbox').checked = false;
 }
-
 document.querySelector('.menu-overlay')?.addEventListener('click', closeMenu);
 
 // Export functions

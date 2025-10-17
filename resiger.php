@@ -725,7 +725,7 @@ body {
         top: 16px;
         left: 16px;
     }
-}.back-btn {
+.back-btn {
     display: inline-flex
 ;
     align-items: center;
@@ -735,6 +735,7 @@ body {
     font-weight: 500;
     transition: all 0.2s 
 ease;
+}
 }
     </style>
 </head>

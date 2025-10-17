@@ -1,3 +1,13 @@
+<?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+error_log("header.php - Session status: " . session_status());
+error_log("header.php - User logged in: " . (isset($_SESSION['user']) ? 'YES' : 'NO'));
+if (isset($_SESSION['user'])) {
+    error_log("header.php - User ID: " . $_SESSION['user']['id']);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +20,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto|Work+Sans:400,600" rel="stylesheet">
+    
+    <script>
+        window.isLoggedIn = <?php echo isset($_SESSION['user']) ? 'true' : 'false'; ?>;
+        window.loginUrl = '/food/login.php';
+    </script>
 </head>
 <body>
     <!-- Header Desktop -->
@@ -77,7 +92,7 @@
 
             <div class="menu-social">
                 <?php if (isset($_SESSION['user'])): ?>
-                    <a href="/food/profile" title="Trang cá nhân">
+                    <a href="/food/profile.php" title="Trang cá nhân">
                         <i class="fa-solid fa-user"></i>
                     </a>
                     <a href="/food/logout.php" title="Đăng xuất">
@@ -128,7 +143,7 @@
             <i class="fa-solid fa-xmark" onclick="this.parentElement.remove()"></i>
         </div>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-ppd8umHYYP29giO3AEYYAO9X/7eHpLvVLnXAYPX4FcLzzxdDpjcD" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="/food/js/cart.js"></script>

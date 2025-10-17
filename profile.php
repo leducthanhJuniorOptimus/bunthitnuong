@@ -16,6 +16,8 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
+// Debug đường dẫn avatar
+error_log("Avatar path in profile.php: /food" . ($user['avatar'] ?? '/image/avatar.png'));
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +30,6 @@ $stmt->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/food/css/style.css">
     <style>
-        /* Material Design Profile Page với màu chủ đạo #ff6b35 */
         :root {
             --primary-color: #ff6b35;
             --primary-light: #ff9e6d;
@@ -267,7 +268,6 @@ $stmt->close();
             }
         }
 
-        /* Badge cho trạng thái */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -285,7 +285,6 @@ $stmt->close();
             font-size: 0.7rem;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .profile-container {
                 margin: 20px auto;
@@ -346,7 +345,7 @@ $stmt->close();
             <div class="profile-header">
                 <div class="avatar-container">
                     <?php if (!empty($user['avatar'])): ?>
-                        <img src="<?php echo htmlspecialchars($user['avatar']); ?>" alt="Avatar" class="avatar">
+                        <img src="/food<?php echo htmlspecialchars($user['avatar'] . '?t=' . time()); ?>" alt="Avatar" class="avatar">
                     <?php else: ?>
                         <div class="avatar d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-user-tie fa-3x" style="color: #ff6b35;"></i>
@@ -386,7 +385,6 @@ $stmt->close();
                     <div class="ripple-container"></div>
                     <i class="fa-solid fa-pen-to-square me-2"></i> Chỉnh Sửa Hồ Sơ
                 </a>
-
                 <a href="/food/logout.php" class="material-btn danger">
                     <div class="ripple-container"></div>
                     <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng Xuất
@@ -396,7 +394,6 @@ $stmt->close();
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-ppd8umHYYP29giO3AEYYAO9X/7eHpLvVLnXAYPX4FcLzzxdDpjcD" crossorigin="anonymous"></script>
     <script>
-        // Thêm hiệu ứng ripple cho các nút
         document.querySelectorAll('.material-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 const ripple = document.createElement('span');

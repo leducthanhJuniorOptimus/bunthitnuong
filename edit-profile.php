@@ -33,17 +33,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } elseif ($file_size > $max_size) {
             $_SESSION['error'] = "File ảnh không được vượt quá 2MB!";
         } else {
-            $upload_dir = __DIR__ . '/uploads/avatars/';
+            $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/food/uploads/avatars/';
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }
 
             $file_ext = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
-            $avatar_path = '/food/uploads/avatars/user_' . $user_id . '_' . time() . '.' . $file_ext;
-            $destination = __DIR__ . $avatar_path;
+            $avatar_path = '/uploads/avatars/user_' . $user_id . '_' . time() . '.' . $file_ext;
+            $destination = $_SERVER['DOCUMENT_ROOT'] . '/food' . $avatar_path;
 
+            error_log("Uploading to: $destination");
             if (!move_uploaded_file($_FILES['avatar']['tmp_name'], $destination)) {
                 $_SESSION['error'] = "Lỗi khi tải lên file ảnh!";
+                error_log("Upload failed for: $destination");
             }
         }
     }
@@ -54,15 +56,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("sssi", $phone, $diachi, $avatar_path, $user_id);
         if ($stmt->execute()) {
             $_SESSION['success'] = "Cập nhật thông tin thành công!";
+            error_log("Avatar updated: $avatar_path");
             header("Location: /food/profile.php");
             exit();
         } else {
-            $_SESSION['error'] = "Lỗi khi cập nhật thông tin!";
+            $_SESSION['error'] = "Lỗi khi cập nhật thông tin: " . $stmt->error;
+            error_log("SQL Error: " . $stmt->error);
         }
         $stmt->close();
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -253,7 +256,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             color: white;
         }
 
-        /* Responsive */
         @media (max-width: 576px) {
             .edit-profile-container {
                 margin: 20px auto;
@@ -272,8 +274,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <div class="edit-profile-container">
-                <a href="/food/index.php"> <i class="fa-solid fa-arrow-left"></i></a>
-
+        <a href="/food/index.php"><i class="fa-solid fa-arrow-left"></i></a>
         <div class="edit-profile-card">
             <h2 class="text-center mb-4">Chỉnh Sửa Hồ Sơ</h2>
             <?php if (isset($_SESSION['error'])): ?>
@@ -284,7 +285,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?php endif; ?>
             <form method="POST" action="#" enctype="multipart/form-data">
                 <div class="form-group mb-4">
-                    <img src="<?php echo htmlspecialchars($user['avatar'] ?? '/food/image/avatar.png'); ?>" alt="Avatar Preview" class="avatar-preview">
+                    <img src="/food<?php echo htmlspecialchars($user['avatar'] ?? '/image/avatar.png') . '?t=' . time(); ?>" alt="Avatar Preview" class="avatar-preview">
                     <div class="input-wrapper">
                         <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/gif">
                         <label for="avatar">Tải lên Avatar</label>
@@ -320,7 +321,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-ppd8umHYYP29giO3AEYYAO9X/7eHpLvVLnXAYPX4FcLzzxdDpjcD" crossorigin="anonymous"></script>
     <script>
-        // Thêm hiệu ứng ripple cho các nút
         document.querySelectorAll('.material-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 const ripple = document.createElement('span');
