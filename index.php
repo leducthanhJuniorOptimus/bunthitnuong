@@ -1,12 +1,29 @@
-<?php 
+<?php
 session_start();
 require_once "db.php";
+
+// Truy vấn sản phẩm
+$sql = "SELECT * FROM products";
+$result = $conn->query($sql);
+
+// Kiểm tra lỗi truy vấn
+if (!$result) {
+    echo "<p style='text-align: center; color: red;'>Lỗi khi tải sản phẩm: " . $conn->error . "</p>";
+    exit;
+}
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bún Thịt Nướng BaMa - Hương vị truyền thống Việt Nam với nguyên liệu tươi ngon và công thức gia truyền.">
+    <meta name="keywords" content="bún thịt nướng, BaMa, món ăn Việt Nam, thực đơn, quán ăn">
+    <meta property="og:title" content="Bún Thịt Nướng BaMa">
+    <meta property="og:description" content="Thưởng thức bún thịt nướng đậm đà hương vị truyền thống tại BaMa.">
+    <meta property="og:image" content="/image/logo.jpg">
+    <meta property="og:url" content="https://yourwebsite.com">
     <title>Bún Thịt Nướng BaMa</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -46,7 +63,6 @@ require_once "db.php";
             border-radius: 10px;
         }
 
-        /* Filter Buttons */
         .filter-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -90,10 +106,12 @@ require_once "db.php";
             height: 300px;
         }
 
-        .filter-btn:hover {
+        .filter-btn:hover, .filter-btn:focus {
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(255, 107, 53, 0.3);
+            outline: 2px solid #ff6b35;
+            outline-offset: 2px;
         }
 
         .filter-btn.active {
@@ -108,15 +126,14 @@ require_once "db.php";
             z-index: 1;
         }
 
-        /* Products Grid */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 2rem;
             padding: 2rem 0;
+            justify-content: center;
         }
 
-        /* Product Card */
         .menu-card {
             background: white;
             border-radius: 20px;
@@ -125,6 +142,9 @@ require_once "db.php";
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             animation: fadeInUp 0.6s ease-out both;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
         }
 
         .menu-card:hover {
@@ -182,6 +202,10 @@ require_once "db.php";
 
         .card-body {
             padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .card-title {
@@ -226,62 +250,73 @@ require_once "db.php";
             transition: all 0.3s ease;
         }
 
-        .btn.btn-danger:hover::before {
+        .btn.btn-danger:hover::before, .btn.btn-danger:focus::before {
             left: 15px;
         }
 
-        .btn.btn-danger:hover {
+        .btn.btn-danger:hover, .btn.btn-danger:focus {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
             padding-left: 40px;
+            outline: 2px solid #ff6b35;
+            outline-offset: 2px;
         }
 
         .btn.btn-danger:active {
             transform: scale(0.95);
         }
 
-        /* Hidden State */
         .product-item.hidden {
             display: none;
         }
 
-        /* Animations */
+        .loading-spinner {
+            text-align: center;
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            color: white;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top:hover, .back-to-top:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+            outline: 2px solid #ff6b35;
+            outline-offset: 2px;
+        }
+
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
-        /* Stagger animation for cards */
         .product-item:nth-child(1) { animation-delay: 0.1s; }
         .product-item:nth-child(2) { animation-delay: 0.2s; }
         .product-item:nth-child(3) { animation-delay: 0.3s; }
         .product-item:nth-child(4) { animation-delay: 0.4s; }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .hero-content h1 {
                 font-size: 2rem;
@@ -318,7 +353,7 @@ require_once "db.php";
 
     <!-- Hero Section -->
     <section class="hero-section" id="home">
-        <video class="hero-video" autoplay muted loop>
+        <video class="hero-video" autoplay muted loop preload="auto" poster="image/poster.jpg">
             <source src="image/videocoking.mp4" type="video/mp4">
         </video>
         <div class="hero-overlay"></div>
@@ -336,93 +371,61 @@ require_once "db.php";
                 <h2 class="section-title">Thực Đơn Hôm Nay</h2>
             </div>
 
+            <!-- Search Bar -->
+            <div class="search-bar" style="text-align: center; margin: 2rem 0;">
+                <input type="text" id="searchInput" class="form-control w-50 mx-auto" placeholder="Tìm kiếm món ăn..." aria-label="Tìm kiếm sản phẩm">
+            </div>
+
             <!-- Filter Buttons -->
             <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">
+                <button class="filter-btn active" data-filter="all" role="button" aria-label="Hiển thị tất cả sản phẩm">
                     <span>🍜 Tất Cả</span>
                 </button>
-                <button class="filter-btn" data-filter="bun-thit-nuong">
+                <button class="filter-btn" data-filter="bun-thit-nuong" role="button" aria-label="Hiển thị món bún thịt nướng">
                     <span>🥢 Bún Thịt Nướng</span>
                 </button>
-                <button class="filter-btn" data-filter="combo">
+                <button class="filter-btn" data-filter="combo" role="button" aria-label="Hiển thị món combo">
                     <span>🍱 Combo</span>
                 </button>
+                <button class="filter-btn" data-filter="com-chien" role="button" aria-label="Hiển thị món cơm chiên">
+                    <span>🍱 Cơm Chiên</span>
+                </button>
+                <button class="filter-btn" data-filter="dothem" role="button" aria-label="Hiển thị món đồ thêm">
+                    <span>🍱 Đồ Thêm</span>
+                </button>
+                <button class="filter-btn" data-filter="nuocngot" role="button" aria-label="Hiển thị món nước ngọt">
+                    <span>🍱 Nước Ngọt</span>
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Đang tải...
             </div>
 
             <!-- Products Grid -->
             <div class="products-grid">
-                <!-- Menu Item 1 -->
-                <div class="menu-card product-item" data-category="bun-thit-nuong">
-                    <div class="card-img-wrapper">
-                        <img src="image/anhsanphambunthitnuong.jpg" class="card-img-top" alt="Bún Thịt Nướng Nhiều Thịt">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Bún Thịt Nướng Nhiều Thịt</h5>
-                        <p class="card-text">38,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Thịt Nướng Nhiều Thịt" data-price="38000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Menu Item 2 -->
-                <div class="menu-card product-item" data-category="bun-thit-nuong">
-                    <div class="card-img-wrapper">
-                        <img src="image/bunthitnuongbama1.jpg" class="card-img-top" alt="Bún Thịt Nướng Đặc Biệt">
-                        <span class="special-badge">✨ Đặc Biệt</span>
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Bún Thịt Nướng Đặc Biệt</h5>
-                        <p class="card-text">42,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Thịt Nướng Đặc Biệt" data-price="42000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Menu Item 3 -->
-                <div class="menu-card product-item" data-category="bun-thit-nuong">
-                    <div class="card-img-wrapper">
-                        <img src="image/bunthitnuongbama.jpg" class="card-img-top" alt="Bún Thịt Nướng Chả Giò">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Bún Thịt Nướng Chả Giò</h5>
-                        <p class="card-text">42,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Thịt Nướng Chả Giò" data-price="42000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Combo Item 1 -->
-                <div class="menu-card product-item" data-category="combo">
-                    <div class="card-img-wrapper">
-                        <img src="image/bunthitnguongbama.jpg" class="card-img-top" alt="Bún Thịt Nướng Đặc Biệt">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Bún Thịt Nướng Đặc Biệt</h5>
-                        <p class="card-text">45,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Thịt Nướng Đặc Biệt" data-price="45000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Combo Item 2 -->
-                <div class="menu-card product-item" data-category="combo">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?w=400" class="card-img-top" alt="Combo Gia Đình">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Combo Gia Đình</h5>
-                        <p class="card-text">120,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Combo Gia Đình" data-price="120000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Combo Item 3 -->
-                <div class="menu-card product-item" data-category="combo">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=400" class="card-img-top" alt="Combo Tiết Kiệm">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Combo Tiết Kiệm</h5>
-                        <p class="card-text">80,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Combo Tiết Kiệm" data-price="80000">Thêm vào giỏ</button>
-                    </div>
-                </div>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <div class="menu-card product-item" data-category="<?php echo htmlspecialchars($row['category']); ?>">
+                            <div class="card-img-wrapper">
+                                <img src="/food/uploads/product/<?php echo basename(htmlspecialchars($row['image'])); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>" class="card-img-top" loading="lazy">
+                                <?php if ($row['is_special']): ?>
+                                    <span class="special-badge">
+                                        <?php echo $row['category'] === 'bun-dac-biet' ? '✨ Đặc Biệt' : ($row['category'] === 'bun-thit-nuong' ? '🔥 Phổ Biến' : '🆕 Mới'); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title"><?php echo htmlspecialchars($row['name']); ?></h5>
+                                <p class="card-text"><?php echo number_format($row['price']); ?> VNĐ</p>
+                                <button class="btn btn-danger" data-name="<?php echo htmlspecialchars($row['name']); ?>" data-price="<?php echo $row['price']; ?>" aria-label="Thêm <?php echo htmlspecialchars($row['name']); ?> vào giỏ hàng">Thêm vào giỏ</button>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p style="text-align: center;">Không có sản phẩm nào trong thực đơn.</p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -433,13 +436,13 @@ require_once "db.php";
         <div class="about-content row align-items-center">
             <div class="col-lg-6 col-md-12">
                 <div class="about-image">
-                    <img src="image/thanganh.png" alt="Bún Thịt Nướng BaMa" class="img-fluid rounded shadow">
+                    <img src="image/thanganh.png" alt="Món ăn tại Bún Thịt Nướng BaMa" class="img-fluid rounded shadow" loading="lazy">
                 </div>
             </div>
             <div class="col-lg-6 col-md-12">
                 <h3>Từ Gốc Bếp Nhỏ</h3>
                 <p>Bún Thịt Nướng BaMa bắt đầu từ niềm đam mê mang đến hương vị truyền thống Việt Nam. Chúng tôi tự hào sử dụng nguyên liệu tươi ngon, công thức gia truyền để tạo nên những món ăn đậm đà, đậm chất quê hương.</p>
-                <a href="#" class="btn btn-about">Xem Thêm Về Chúng Tôi</a>
+                <a href="gioi-thieu-ve-bun-thit-nuong-bama" class="btn btn-about" aria-label="Xem thêm về Bún Thịt Nướng BaMa">Xem Thêm Về Chúng Tôi</a>
             </div>
         </div>
     </section>
@@ -452,43 +455,88 @@ require_once "db.php";
                 <div class="title">Thành công</div>
                 <span>Đã thêm vào giỏ hàng!</span>
             </div>
-            <i class="fa-solid fa-xmark" onclick="(this.parentElement).remove()"></i>
+            <i class="fa-solid fa-xmark" onclick="(this.parentElement).remove()" aria-label="Đóng thông báo"></i>
         </div>
     </div>
 
+    <!-- Back to Top Button -->
+    <button class="back-to-top" aria-label="Quay lại đầu trang">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <?php include 'footer.html'; ?>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "Bún Thịt Nướng BaMa",
+        "description": "Quán ăn chuyên phục vụ bún thịt nướng và các món ăn truyền thống Việt Nam.",
+        "url": "https://yourwebsite.com",
+        "image": "/image/logo.jpg",
+        "servesCuisine": "Vietnamese"
+    }
+    </script>
+
     <script>
         // Filter functionality
         const filterButtons = document.querySelectorAll('.filter-btn');
         const productItems = document.querySelectorAll('.product-item');
+        const loadingSpinner = document.querySelector('.loading-spinner');
 
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all buttons
                 filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
                 button.classList.add('active');
+                loadingSpinner.style.display = 'block';
 
-                const filterValue = button.getAttribute('data-filter');
-
-                productItems.forEach(item => {
-                    if (filterValue === 'all') {
-                        item.classList.remove('hidden');
-                        setTimeout(() => {
-                            item.style.animation = 'fadeInUp 0.6s ease-out both';
-                        }, 10);
-                    } else {
-                        if (item.getAttribute('data-category') === filterValue) {
+                setTimeout(() => {
+                    const filterValue = button.getAttribute('data-filter');
+                    productItems.forEach(item => {
+                        if (filterValue === 'all') {
                             item.classList.remove('hidden');
-                            setTimeout(() => {
-                                item.style.animation = 'fadeInUp 0.6s ease-out both';
-                            }, 10);
+                            item.style.animation = 'fadeInUp 0.6s ease-out both';
                         } else {
-                            item.classList.add('hidden');
+                            if (item.getAttribute('data-category') === filterValue) {
+                                item.classList.remove('hidden');
+                                item.style.animation = 'fadeInUp 0.6s ease-out both';
+                            } else {
+                                item.classList.add('hidden');
+                            }
                         }
-                    }
-                });
+                    });
+                    loadingSpinner.style.display = 'none';
+                }, 300);
             });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchValue = e.target.value.toLowerCase();
+            productItems.forEach(item => {
+                const name = item.querySelector('.card-title').textContent.toLowerCase();
+                if (name.includes(searchValue)) {
+                    item.classList.remove('hidden');
+                    item.style.animation = 'fadeInUp 0.6s ease-out both';
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        // Back to Top functionality
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     </script>
     <script src="cart.js"></script>

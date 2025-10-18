@@ -1,7 +1,12 @@
 <?php 
 session_start();
 require_once "../db.php";
+
+// Fetch all products from the database
+$sql = "SELECT * FROM products";
+$result = $conn->query($sql);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,13 +15,10 @@ require_once "../db.php";
     <title>Tất cả sản phẩm của bún thịt nướng bama</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-     <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <style>
- .products-section {
+        .products-section {
             padding: 4rem 0;
             position: relative;
         }
@@ -48,7 +50,6 @@ require_once "../db.php";
             border-radius: 10px;
         }
 
-        /* Filter Buttons */
         .filter-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -110,7 +111,6 @@ require_once "../db.php";
             z-index: 1;
         }
 
-        /* Products Grid */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -118,7 +118,6 @@ require_once "../db.php";
             padding: 2rem 0;
         }
 
-        /* Product Card */
         .menu-card {
             background: white;
             border-radius: 20px;
@@ -205,7 +204,7 @@ require_once "../db.php";
             margin-bottom: 1rem;
         }
 
-        .btn btn-danger {
+        .btn.btn-danger {
             width: 100%;
             padding: 12px;
             background: linear-gradient(90deg, #ff6b35, #f7931e);
@@ -221,33 +220,31 @@ require_once "../db.php";
             overflow: hidden;
         }
 
-        .btn btn-danger::before {
+        .btn.btn-danger::before {
             content: '🛒';
             position: absolute;
             left: -30px;
             transition: all 0.3s ease;
         }
 
-        .btn btn-danger:hover::before {
+        .btn.btn-danger:hover::before {
             left: 15px;
         }
 
-        .btn btn-danger:hover {
+        .btn.btn-danger:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
             padding-left: 40px;
         }
 
-        .btn btn-danger:active {
+        .btn.btn-danger:active {
             transform: scale(0.95);
         }
 
-        /* Hidden State */
         .product-item.hidden {
             display: none;
         }
 
-        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -277,13 +274,11 @@ require_once "../db.php";
             }
         }
 
-        /* Stagger animation for cards */
         .product-item:nth-child(1) { animation-delay: 0.1s; }
         .product-item:nth-child(2) { animation-delay: 0.2s; }
         .product-item:nth-child(3) { animation-delay: 0.3s; }
         .product-item:nth-child(4) { animation-delay: 0.4s; }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .hero-content h1 {
                 font-size: 2rem;
@@ -313,17 +308,13 @@ require_once "../db.php";
                 grid-template-columns: 1fr;
             }
         }
-
-        /* Decorative Elements */
-        
-
     </style>
 </head>
 <body>
-      <?php include '../header.php'; ?>
+    <?php include '../header.php'; ?>
 
-    <!-- All Products Section -->
- <section class="hero-section" id="home">
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
         <video class="hero-video" autoplay muted loop>
             <source src="../video/videosanpham.mp4" type="video/mp4">
         </video>
@@ -335,8 +326,8 @@ require_once "../db.php";
         </div>
     </section>
 
-  <!-- Filter Buttons -->
-<section class="products-section" id="products">
+    <!-- Products Section -->
+    <section class="products-section" id="products">
         <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
             <div class="section-header">
                 <h2 class="section-title">Tất Cả Sản Phẩm</h2>
@@ -360,56 +351,23 @@ require_once "../db.php";
 
             <!-- Products Grid -->
             <div class="products-grid">
-                <!-- Product 1 -->
-                <div class="menu-card product-item" data-category="bun-thit-nuong">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300&h=200&fit=crop" alt="Bún Thịt Nướng" class="card-img-top">
-                        <span class="special-badge">🔥 Phổ Biến</span>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <div class="menu-card product-item" data-category="<?php echo htmlspecialchars($row['category']); ?>">
+                        <div class="card-img-wrapper">
+                            <img src="/food/uploads/product/<?php echo basename(htmlspecialchars($row['image'])); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>" class="card-img-top">
+                            <?php if ($row['is_special']): ?>
+                                <span class="special-badge">
+                                    <?php echo $row['category'] === 'bun-dac-biet' ? '✨ Đặc Biệt' : ($row['category'] === 'bun-thit-nuong' ? '🔥 Phổ Biến' : '🆕 Mới'); ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($row['name']); ?></h5>
+                            <p class="card-text"><?php echo number_format($row['price']); ?> VNĐ</p>
+                            <button class="btn btn-danger" data-name="<?php echo htmlspecialchars($row['name']); ?>" data-price="<?php echo $row['price']; ?>">Thêm vào giỏ</button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Bún Thịt Nướng</h5>
-                        <p class="card-text">45,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Thịt Nướng" data-price="45000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Product 2 -->
-                <div class="menu-card product-item" data-category="bun-dac-biet">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop" alt="Bún Đặc Biệt" class="card-img-top">
-                        <span class="special-badge">✨ Đặc Biệt</span>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Bún Đặc Biệt</h5>
-                        <p class="card-text">60,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Đặc Biệt" data-price="60000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="menu-card product-item" data-category="com-chien">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1603133872878-684f1e9c4694?w=300&h=200&fit=crop" alt="Cơm Chiên" class="card-img-top">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Cơm Chiên Hải Sản</h5>
-                        <p class="card-text">55,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Cơm Chiên Hải Sản" data-price="55000">Thêm vào giỏ</button>
-                    </div>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="menu-card product-item" data-category="bun-thit-nuong">
-                    <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=300&h=200&fit=crop" alt="Bún Thịt Nướng Đặc Biệt" class="card-img-top">
-                        <span class="special-badge">🆕 Mới</span>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Bún Thịt Nướng Đặc Biệt</h5>
-                        <p class="card-text">50,000 VNĐ</p>
-                        <button class="btn btn-danger" data-name="Bún Thịt Nướng Đặc Biệt" data-price="50000">Thêm vào giỏ</button>
-                    </div>
-                </div>
+                <?php endwhile; ?>
             </div>
         </div>
     </section>
@@ -421,9 +379,7 @@ require_once "../db.php";
 
         filterButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all buttons
                 filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
                 button.classList.add('active');
 
                 const filterValue = button.getAttribute('data-filter');
@@ -447,8 +403,8 @@ require_once "../db.php";
                 });
             });
         });
-
     </script>
+
     <?php include '../footer.html'; ?>
     <script src="/food/cart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

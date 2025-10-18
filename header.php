@@ -38,6 +38,7 @@ if (isset($_SESSION['user'])) {
                 <li><a href="/food/gioi-thieu-ve-bun-thit-nuong-bama/">Giới Thiệu</a></li>
                 <li><a href="/food/san-pham-bun-thit-nuong/">Sản Phẩm</a></li>
                 <li><a href="/food/lien-he-bun-thit-nuong-bama/">Liên Hệ</a></li>
+                <li><a href="/food/Blog/">Blog</a></li>
             </ul>
         </div>
         <div class="menu-social">

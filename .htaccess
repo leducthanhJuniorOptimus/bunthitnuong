@@ -1,7 +1,9 @@
 RewriteEngine On
+RewriteBase /food/
 
-RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^([^/]+)$ $1.html [L]
+# Test xem rewrite có hoạt động không
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^Blog/([a-zA-Z0-9\-]+)/?$ Blog/detail.php?slug=$1 [L,QSA]
 
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^([^/]+)$ $1.php [L]
+RewriteRule ^Blog/?$ Blog/index.php [L,QSA]
