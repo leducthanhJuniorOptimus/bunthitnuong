@@ -196,7 +196,7 @@ if (!$result) {
                                     <span><i class="fas fa-eye"></i> <?php echo number_format($row['views']); ?> Lượt xem</span>
                                 </div>
                                 <p class="blog-intro"><?php echo htmlspecialchars($row['intro']); ?></p>
-                                <a href="/food/Blog/detail.php?slug=<?php echo htmlspecialchars($row['slug']); ?>" class="blog-read-more">Đọc thêm</a>
+                                <a href="/food/Blog/<?php echo htmlspecialchars($row['slug']); ?>" class="blog-read-more">Đọc thêm</a>
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>

@@ -1,7 +1,7 @@
 RewriteEngine On
 RewriteBase /food/
 
-# Test xem rewrite có hoạt động không
+# Kiểm tra rewrite có hoạt động không
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^Blog/([a-zA-Z0-9\-]+)/?$ Blog/detail.php?slug=$1 [L,QSA]
